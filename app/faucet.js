@@ -10,7 +10,7 @@ var accounts;
 var account;
 
 // Your deployed address changes every time you deploy.
-var faucetAddress = "0xcc4c1f1632219686613d4ac291e0cecf5c4cdef0"; // <-- Put your own
+var faucetAddress = "0xb045a359868c934aa67ec2fcee58ff801c3f509c"; // <-- Put your own
 faucetInstance = web3.eth.contract(faucetCompiled.Faucet.info.abiDefinition).at(faucetAddress);
 
 // Query eth for balance
@@ -31,13 +31,14 @@ function setStatus(message) {
 
 function refreshBalance() {
   //NOT THENNABLE?? 2/22/2017
-  faucetInstance.getBalance.call().then(function(value) {
+  value = faucetInstance.getBalance.call();//.then(function(value) {
+  
     var balance_element = document.getElementById("balance");
     balance_element.innerHTML = value.valueOf();
-  }).catch(function(e) {
-    console.log(e);
-    setStatus("Error getting balance; see log.");
-  });
+  // }).catch(function(e) {
+  //   console.log(e);
+  //   setStatus("Error getting balance; see log.");
+  // });
 };
 function topUp() {
     var txn = web3.eth.sendTransaction({ 
@@ -45,14 +46,20 @@ function topUp() {
         to: faucetAddress,
         value: web3.toWei(1, "ether") 
     });
+    setStatus("Initiating transaction... (please wait)");
+    setStatus("Transaction complete!");
+    refreshBalance();
     console.log("topUp txn: " + txn);
 }
 function sendWei() {
     var targetAccount = document.getElementById("targetAccount").value;
+    setStatus("Initiating transaction... (please wait)");
 
     var txn = faucetInstance.sendWei(
         targetAccount,
         {from: web3.eth.coinbase});
+    setStatus("Transaction complete!");
+    refreshBalance();
     console.log("sendWei txn: " + txn);
 }
 //Copied from MetaCoin
